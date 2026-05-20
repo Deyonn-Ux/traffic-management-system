@@ -3,6 +3,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from drivers.models import Driver
 from payments.models import Payment, TicketReference
@@ -188,3 +189,27 @@ def staff_delete_violation(request, violation_id):
         messages.success(request, f'Violation record deleted: {violation_name}.')
 
     return redirect('staff_add_violation')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def staff_update_payment_status(request, payment_id):
+    if request.method == 'POST':
+        payment = get_object_or_404(Payment, id=payment_id)
+        status = request.POST.get('status')
+        valid_statuses = {choice[0] for choice in Payment.STATUS_CHOICES}
+
+        if status in valid_statuses:
+            payment.status = status
+            payment.verified_at = None if status == 'pending' else timezone.now()
+            payment.save(update_fields=['status', 'verified_at'])
+
+            if payment.violation_id and status == 'paid':
+                payment.violation.status = 'Settled'
+                payment.violation.save(update_fields=['status'])
+
+            messages.success(request, f'Payment {payment.receipt_number} updated to {payment.get_status_display()}.')
+        else:
+            messages.error(request, 'Payment status was not updated. Please choose a valid status.')
+
+    return redirect('staff_portal')

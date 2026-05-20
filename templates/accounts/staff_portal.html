@@ -175,6 +175,7 @@
                     <th>Plate</th>
                     <th>Amount</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -186,6 +187,17 @@
                     <td>{{ payment.plate_number }}</td>
                     <td>PHP {{ payment.amount_paid }}</td>
                     <td><span class="status-pill">{{ payment.get_status_display }}</span></td>
+                    <td>
+                        <form class="d-flex flex-wrap gap-2 align-items-center" action="{% url 'staff_update_payment_status' payment.id %}" method="post">
+                            {% csrf_token %}
+                            <select class="form-select form-select-sm" name="status" aria-label="Payment status">
+                                <option value="pending" {% if payment.status == 'pending' %}selected{% endif %}>Pending Verification</option>
+                                <option value="paid" {% if payment.status == 'paid' %}selected{% endif %}>Paid</option>
+                                <option value="rejected" {% if payment.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" type="submit">Save</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

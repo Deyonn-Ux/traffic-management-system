@@ -11,6 +11,7 @@ from .views import (
     staff_delete_vehicle,
     staff_delete_violation,
     staff_portal,
+    staff_update_payment_status,
     update_email,
     update_mobile,
 )
@@ -46,5 +47,6 @@ urlpatterns = [
     path('add-vehicle/<int:vehicle_id>/delete/', staff_delete_vehicle, name='staff_delete_vehicle'),
     path('add-violation/', staff_add_violation, name='staff_add_violation'),
     path('add-violation/<int:violation_id>/delete/', staff_delete_violation, name='staff_delete_violation'),
+    path('payments/<int:payment_id>/status/', staff_update_payment_status, name='staff_update_payment_status'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
