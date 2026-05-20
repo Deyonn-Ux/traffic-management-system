@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="settings-wrap">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a class="btn btn-light" href="/">Back</a>
+        <h1 class="settings-title h3 mb-0">SETTINGS</h1>
+        <span></span>
+    </div>
+
+    <h2 class="settings-group-title h6">Account Information</h2>
+    <div class="settings-row mb-2">
+        <div class="d-flex align-items-center gap-3">
+            <span class="settings-icon">U</span>
+            <div>
+                <strong>{{ user.username }}</strong>
+                <div class="text-muted">{{ user.email|default:"No email address added" }}</div>
+                <div class="text-muted">Mobile: {{ mobile_number|default:"Not set" }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="settings-row">
+        <div class="d-flex align-items-center gap-3">
+            <span class="settings-icon">A</span>
+            <span>Billing Address</span>
+        </div>
+        <span class="text-muted">Not set</span>
+    </div>
+
+    <h2 class="settings-group-title h6">Account Settings</h2>
+    <div class="settings-row">
+        <div class="d-flex align-items-center gap-3">
+            <span class="settings-icon">E</span>
+            <span>Update Email</span>
+        </div>
+        <a class="text-decoration-none fw-bold" href="{% url 'update_email' %}">View</a>
+    </div>
+    <div class="settings-row">
+        <div class="d-flex align-items-center gap-3">
+            <span class="settings-icon">M</span>
+            <span>Update Mobile Number</span>
+        </div>
+        <a class="text-decoration-none fw-bold" href="{% url 'update_mobile' %}">View</a>
+    </div>
+    <div class="settings-row">
+        <div class="d-flex align-items-center gap-3">
+            <span class="settings-icon">P</span>
+            <span>Change Password</span>
+        </div>
+        <a class="text-decoration-none fw-bold" href="{% url 'change_password' %}">Manage</a>
+    </div>
+</section>
+{% endblock %}

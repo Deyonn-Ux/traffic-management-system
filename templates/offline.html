@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Offline | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Offline Mode</span>
+    <h1 class="page-title h1">You are offline</h1>
+    <p class="lead-copy mb-4">The app is not connected to the internet right now. Cached pages are available for basic navigation.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="/">Dashboard</a>
+        <a class="btn btn-outline-dark" href="/payments/">Payment History</a>
+        <a class="btn btn-outline-dark" href="/violations/">Violation Search</a>
+    </div>
+</section>
+
+<section class="content-panel">
+    <div class="mb-4">
+        <h2 class="h4 fw-bold">Cached Pages</h2>
+        <p class="text-muted">The following pages are available offline if you loaded them before losing connection:</p>
+        <ul class="list-unstyled">
+            <li>Home Dashboard</li>
+            <li>Payment page</li>
+            <li>Violation page</li>
+            <li>Driver page</li>
+            <li>Vehicle page</li>
+        </ul>
+    </div>
+    <div class="alert alert-warning">
+        If you need to submit data while offline, the app will only save the page shell locally. Actual payment, search results, and updates require an internet connection.
+    </div>
+</section>

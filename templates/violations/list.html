@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Violations | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Case Monitoring</span>
+    <h1 class="page-title h1">Violations</h1>
+    <p class="lead-copy mb-4">
+        Review violation records, fine amounts, assigned vehicles, and current payment status.
+        {% if plate_query or license_query %}
+        Showing results for{% if plate_query %} plate "{{ plate_query }}"{% endif %}{% if plate_query and license_query %} and{% endif %}{% if license_query %} license "{{ license_query }}"{% endif %}.
+        {% endif %}
+    </p>
+    <form class="row g-2 mb-3" action="/violations/" method="get">
+        <div class="col-md-5">
+            <input class="form-control" type="text" name="plate" value="{{ plate_query }}" placeholder="Search plate number">
+        </div>
+        <div class="col-md-5">
+            <input class="form-control" type="text" name="license" value="{{ license_query }}" placeholder="Search license number">
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap gap-2">
+        {% if user.is_authenticated and user.is_staff %}
+        <a class="btn btn-primary" href="/accounts/staff-portal/">Staff Portal</a>
+        {% else %}
+        <a class="btn btn-primary" href="/payments/">Pay Fine</a>
+        {% endif %}
+        <a class="btn btn-outline-dark" href="/violations/">Clear Search</a>
+        <a class="btn btn-outline-dark" href="/">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="content-panel">
+    {% if violations %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Violation</th>
+                    <th>Driver</th>
+                    <th>Vehicle</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for violation in violations %}
+                <tr>
+                    <td class="fw-bold">{{ violation.violation_type }}</td>
+                    <td>{{ violation.display_driver }}</td>
+                    <td>{{ violation.vehicle }}</td>
+                    <td>PHP {{ violation.fine_amount }}</td>
+                    <td><span class="status-pill">{{ violation.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No violation records found</h2>
+        <p>Try another plate or license number, or return to the dashboard.</p>
+        <a class="btn btn-primary" href="/">Back to Dashboard</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

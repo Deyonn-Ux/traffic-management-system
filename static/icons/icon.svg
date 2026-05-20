@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#071a3d"/>
+  <circle cx="256" cy="256" r="166" fill="#d90d28" stroke="#fff" stroke-width="24"/>
+  <path d="M170 149h172v54h-58v160h-56V203h-58z" fill="#fff"/>
+  <path d="M148 105h216v38H148z" fill="#ffd23f"/>
+  <text x="256" y="401" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#fff">TVS</text>
+</svg>

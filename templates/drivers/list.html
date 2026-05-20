@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Drivers | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Driver Registry</span>
+    <h1 class="page-title h1">Drivers</h1>
+    <p class="lead-copy mb-4">View registered driver records for violation checking and payment reference.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="/violations/">Check Violations</a>
+        <a class="btn btn-outline-dark" href="/">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="content-panel">
+    {% if drivers %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>License Number</th>
+                    <th>Violations</th>
+                    <th>Repeat Offender</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in drivers %}
+                <tr>
+                    <td class="fw-bold">{{ driver.display_name }}</td>
+                    <td>{{ driver.display_license }}</td>
+                    <td>{{ driver.violation_count }}</td>
+                    <td>
+                        {% if driver.violation_count|default:0 >= 2 %}
+                        <span class="status-pill">Repeat Offender</span>
+                        {% else %}
+                        <span class="text-muted">No</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ driver.display_contact }}</td>
+                    <td>{{ driver.display_address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No drivers are available</h2>
+        <p>Official driver records will appear here after they are added by authorized staff.</p>
+        <a class="btn btn-primary" href="/violations/">Check Violations</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,96 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel portal-hero mb-4">
+    <div class="lookup-card">
+        <div class="policy-ribbon">No Contact Violation Portal</div>
+        <h1 class="page-title display-4">CHECK YOUR RECORD</h1>
+        <p class="lead-copy mb-4">
+            Search a plate number or driver license number to find related violation cases in the system.
+        </p>
+
+        <form action="/violations/" method="get">
+            <input class="form-control lookup-input" type="text" name="plate" placeholder="Plate number or conduction sticker">
+            <div class="divider-word fw-bold">OR</div>
+            <input class="form-control lookup-input" type="text" name="license" placeholder="Driver license number">
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <button class="btn btn-primary px-4" type="submit">Check Violations</button>
+                {% if user.is_authenticated and user.is_staff %}
+                <a class="btn btn-outline-dark" href="/accounts/staff-portal/">Staff Portal</a>
+                <a class="btn btn-warning" href="/payments/">Payment Records</a>
+                {% else %}
+                <a class="btn btn-outline-dark" href="/payments/">Pay Fine</a>
+                <a class="btn btn-warning" href="/vehicles/">Vehicle Portal</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <a class="text-decoration-none text-reset" href="/drivers/">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_drivers }}</div>
+                <div class="stat-label mt-2">Registered Drivers</div>
+                <span class="small text-muted">License holder records</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="text-decoration-none text-reset" href="/vehicles/">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_vehicles }}</div>
+                <div class="stat-label mt-2">Recorded Vehicles</div>
+                <span class="small text-muted">Plate and model records</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="text-decoration-none text-reset" href="/violations/">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_violations }}</div>
+                <div class="stat-label mt-2">Violation Cases</div>
+                <span class="small text-muted">Open and settled cases</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="text-decoration-none text-reset" href="/payments/">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_payments }}</div>
+                <div class="stat-label mt-2">Payment Records</div>
+                <span class="small text-muted">Fine settlement entries</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<section class="content-panel">
+    <div class="row g-3 align-items-center">
+        <div class="col-lg-7">
+            <span class="eyebrow">Public Services</span>
+            <h2 class="h4 fw-bold mb-1">View records, check violations, and settle fines online.</h2>
+            <p class="text-muted mb-0">Create an account to continue to payment services. Public users can view and pay, while official record editing stays restricted.</p>
+        </div>
+        <div class="col-lg-5">
+            <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                {% if user.is_authenticated and user.is_staff %}
+                <a class="btn btn-primary" href="/accounts/staff-portal/">Staff Portal</a>
+                <a class="btn btn-outline-dark" href="/payments/">Payment Records</a>
+                <a class="btn btn-warning" href="/drivers/">Offender Records</a>
+                {% else %}
+                <a class="btn btn-outline-dark" href="/payments/">Pay My Fine</a>
+                <a class="btn btn-warning" href="/violations/">Check Violations</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicles | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Vehicle Records</span>
+    <h1 class="page-title h1">Vehicles</h1>
+    <p class="lead-copy mb-4">View registered vehicle details connected to driver records.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="/violations/">Check Violations</a>
+        <a class="btn btn-outline-dark" href="/">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="content-panel">
+    {% if vehicles %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Plate Number</th>
+                    <th>Driver</th>
+                    <th>Type</th>
+                    <th>Model</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in vehicles %}
+                <tr>
+                    <td class="fw-bold">{{ vehicle.display_plate }}</td>
+                    <td>{{ vehicle.display_driver }}</td>
+                    <td>{{ vehicle.vehicle_type }}</td>
+                    <td>{{ vehicle.model }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No vehicles are available</h2>
+        <p>Official vehicle records will appear here after they are added by authorized staff.</p>
+        <a class="btn btn-primary" href="/violations/">Check Violations</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

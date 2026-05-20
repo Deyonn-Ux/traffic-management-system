@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Checkout | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="content-panel checkout-panel">
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-7">
+            <span class="eyebrow">Payment Checkout</span>
+            <h1 class="h3 fw-bold mb-2">Pay using your ticket details</h1>
+            <p class="text-muted mb-4">Enter the ticket/reference number issued by the traffic enforcer and the matching plate number. The system will use the official violation record for the fine details.</p>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            <form id="receiptForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="payment_channel" value="{{ payment_channel }}">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ payment_channel_label }} Choices</label>
+                    <div class="payment-method-grid">
+                        {% for method in payment_methods %}
+                        <label class="checkout-method">
+                            <input type="radio" name="payment_method" value="{{ method }}" {% if form_data.payment_method == method or not form_data.payment_method and forloop.first %}checked{% endif %}>
+                            <span>{{ method }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="ticketNumber">Ticket / Reference Number</label>
+                        <input class="form-control" id="ticketNumber" name="ticket_number" type="text" value="{{ form_data.ticket_number }}" placeholder="Example: TVS-2026-A1B2C3" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="plateNumber">Plate Number</label>
+                        <input class="form-control" id="plateNumber" name="plate_number" type="text" value="{{ form_data.plate_number }}" placeholder="Example: SZA 2001" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="violationType">Violation</label>
+                        <input class="form-control" id="violationType" type="text" value="{% if receipt %}{{ receipt.violation_type }}{% endif %}" placeholder="Filled after a valid reference is submitted" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="amount">Fine Amount</label>
+                        <input class="form-control" id="amount" type="text" value="{% if receipt %}PHP {{ receipt.amount_paid }}{% endif %}" placeholder="Filled after a valid reference is submitted" readonly>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-3">
+                    The ticket/reference number must be issued from the staff portal and match the plate number before a payment record can be created.
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary px-4" type="submit">Submit Payment for Verification</button>
+                    <a class="btn btn-outline-dark" href="/payments/#payment-methods">Back to Payment Methods</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <aside class="receipt-card" id="receiptCard">
+                <div class="receipt-head">
+                    <div>
+                        <span class="eyebrow">Temporary Receipt</span>
+                        <h2 class="h5 fw-bold mb-0">Traffic Violation Payment</h2>
+                    </div>
+                    <span class="receipt-badge">Pending Verification</span>
+                </div>
+                <div class="receipt-line">
+                    <span>Receipt No.</span>
+                    <strong id="receiptNo">{% if receipt %}{{ receipt.receipt_number }}{% else %}TVS-TEMP{% endif %}</strong>
+                </div>
+                <div class="receipt-line">
+                    <span>Ticket No.</span>
+                    <strong id="receiptTicket">{% if receipt %}{{ receipt.ticket_number }}{% else %}Not entered{% endif %}</strong>
+                </div>
+                <div class="receipt-line">
+                    <span>Plate No.</span>
+                    <strong id="receiptPlate">{% if receipt %}{{ receipt.plate_number }}{% else %}Not entered{% endif %}</strong>
+                </div>
+                <div class="receipt-line">
+                    <span>Violation</span>
+                    <strong id="receiptViolation">{% if receipt %}{{ receipt.violation_type }}{% else %}Not entered{% endif %}</strong>
+                </div>
+                <div class="receipt-line">
+                    <span>Method</span>
+                    <strong id="receiptMethod">{% if receipt %}{{ receipt.payment_method }}{% else %}{{ default_payment_method }}{% endif %}</strong>
+                </div>
+                <div class="receipt-total">
+                    <span>Amount</span>
+                    <strong id="receiptAmount">PHP {% if receipt %}{{ receipt.amount_paid }}{% else %}0.00{% endif %}</strong>
+                </div>
+                {% if receipt %}
+                <div class="receipt-line">
+                    <span>Date Submitted</span>
+                    <strong>{{ receipt.created_at|date:"M d, Y H:i:s" }}</strong>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <a class="btn btn-primary" href="{% url 'download_pdf_receipt' receipt.id %}">Download PDF Receipt</a>
+                    <a class="btn btn-outline-dark" href="/payments/">Back to Payment Methods</a>
+                </div>
+                {% endif %}
+                <p class="text-muted small mb-0 mt-3">Keep this temporary receipt and compare it with the official receipt from the payment provider.</p>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<style>
+    .payment-method-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    }
+
+    .checkout-method {
+        align-items: center;
+        border: 1px solid rgba(7, 26, 61, 0.18);
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        gap: 10px;
+        min-height: 56px;
+        padding: 12px;
+        transition: border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .checkout-method:hover {
+        border-color: #d90d28;
+        transform: translateY(-2px);
+    }
+
+    .checkout-method span {
+        font-weight: 850;
+    }
+
+    .receipt-card {
+        background: #fff;
+        border: 1px solid rgba(7, 26, 61, 0.14);
+        border-radius: 8px;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+        padding: 22px;
+        position: sticky;
+        top: 110px;
+    }
+
+    .receipt-head,
+    .receipt-line,
+    .receipt-total {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .receipt-head {
+        border-bottom: 2px dashed rgba(7, 26, 61, 0.18);
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+    }
+
+    .receipt-badge {
+        background: rgba(217, 13, 40, 0.1);
+        border-radius: 999px;
+        color: #d90d28;
+        font-weight: 850;
+        padding: 5px 10px;
+    }
+
+    .receipt-line {
+        border-bottom: 1px solid rgba(7, 26, 61, 0.08);
+        padding: 11px 0;
+    }
+
+    .receipt-total {
+        background: #f7fbff;
+        border-radius: 8px;
+        margin-top: 14px;
+        padding: 14px;
+    }
+
+    .receipt-total strong {
+        font-size: 1.25rem;
+    }
+</style>
+
+{% endblock %}

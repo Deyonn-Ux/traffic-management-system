@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Driver | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Driver Registry</span>
+    <h1 class="page-title h1">Add Driver</h1>
+    <p class="lead-copy mb-4">Create driver records and review the current driver list.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-dark" href="{% url 'staff_portal' %}">Staff Portal</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_vehicle' %}">Add Vehicle</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_violation' %}">Add Violation</a>
+    </div>
+</section>
+
+<section class="content-panel mb-4">
+    <form action="{% url 'staff_add_driver' %}" method="post">
+        {% csrf_token %}
+        <h2 class="h4 fw-bold mb-3">Driver Details</h2>
+        {{ form.non_field_errors }}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold" for="{{ form.first_name.id_for_label }}">First Name</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold" for="{{ form.last_name.id_for_label }}">Last Name</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold" for="{{ form.license_number.id_for_label }}">License Number</label>
+                {{ form.license_number }}
+                {{ form.license_number.errors }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold" for="{{ form.contact_number.id_for_label }}">Contact Number</label>
+                {{ form.contact_number }}
+                {{ form.contact_number.errors }}
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-bold" for="{{ form.address.id_for_label }}">Address</label>
+                {{ form.address }}
+                {{ form.address.errors }}
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100" type="submit">Save Driver</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<section class="content-panel">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Driver Records</span>
+            <h2 class="h4 fw-bold mb-0">Registered Drivers</h2>
+        </div>
+    </div>
+    {% if drivers %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>License</th>
+                    <th>Violations</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in drivers %}
+                <tr>
+                    <td class="fw-bold">{{ driver.first_name }} {{ driver.last_name }}</td>
+                    <td>{{ driver.license_number }}</td>
+                    <td>{{ driver.violation_count }}</td>
+                    <td>{{ driver.contact_number }}</td>
+                    <td>{{ driver.address }}</td>
+                    <td>
+                        <form action="{% url 'staff_delete_driver' driver.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No drivers yet</h2>
+        <p>Driver records will appear here after staff add them.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

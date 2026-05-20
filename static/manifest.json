@@ -1,0 +1,19 @@
+{
+  "name": "Traffic Violation System",
+  "short_name": "TVS",
+  "description": "Check traffic violations, view vehicle records, and submit fine payments.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7fbff",
+  "theme_color": "#071a3d",
+  "icons": [
+    {
+      "src": "/static/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

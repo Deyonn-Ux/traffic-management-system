@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Portal | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Staff Portal</span>
+    <h1 class="page-title h1">System Monitoring</h1>
+    <p class="lead-copy mb-4">Review violation records, payment status, and repeat offender alerts.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{% url 'staff_add_violation' %}">Add Violation</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_vehicle' %}">Add Vehicle</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_driver' %}">Add Driver</a>
+        <a class="btn btn-outline-dark" href="/violations/">View Violations</a>
+        <a class="btn btn-outline-dark" href="/payments/">View Payments</a>
+    </div>
+</section>
+
+<section class="content-panel mb-4">
+    <div class="row g-3">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_drivers }}</div>
+                <div class="stat-label mt-2">Drivers</div>
+                <span class="small text-muted">Registered driver records</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_vehicles }}</div>
+                <div class="stat-label mt-2">Vehicles</div>
+                <span class="small text-muted">Vehicle records</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_violations }}</div>
+                <div class="stat-label mt-2">Violations</div>
+                <span class="small text-muted">Total violation cases</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_payments }}</div>
+                <div class="stat-label mt-2">Payments</div>
+                <span class="small text-muted">Payment records</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-panel mb-4" id="staff-record-tools">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Staff Record Tools</span>
+            <h2 class="h4 fw-bold mb-0">Record Management</h2>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <a class="text-decoration-none text-reset" href="{% url 'staff_add_violation' %}">
+                <div class="stat-card">
+                    <div class="stat-label">Add Violation</div>
+                    <span class="small text-muted">Create cases, issue ticket references, and review violation records.</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="text-decoration-none text-reset" href="{% url 'staff_add_vehicle' %}">
+                <div class="stat-card">
+                    <div class="stat-label">Add Vehicle</div>
+                    <span class="small text-muted">Create vehicle records and track plates, models, and owners.</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="text-decoration-none text-reset" href="{% url 'staff_add_driver' %}">
+                <div class="stat-card">
+                    <div class="stat-label">Add Driver</div>
+                    <span class="small text-muted">Create driver profiles and review driver history.</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="content-panel mb-4">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-value">{{ pending_payments }}</div>
+                <div class="stat-label mt-2">Pending Payments</div>
+                <span class="small text-muted">Awaiting verification</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-value">{{ paid_payments }}</div>
+                <div class="stat-label mt-2">Verified Payments</div>
+                <span class="small text-muted">Settled fines</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-panel mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Recent Offender Records</span>
+            <h2 class="h4 fw-bold mb-0">Latest Violation Cases</h2>
+        </div>
+        <a class="btn btn-outline-dark" href="/violations/">All Violations</a>
+    </div>
+
+    {% if recent_violations %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Driver</th>
+                    <th>License</th>
+                    <th>Vehicle</th>
+                    <th>Plate</th>
+                    <th>Violation</th>
+                    <th>Ticket</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for violation in recent_violations %}
+                <tr>
+                    <td class="fw-bold">{{ violation.driver.first_name }} {{ violation.driver.last_name }}</td>
+                    <td>{{ violation.driver.license_number }}</td>
+                    <td>{{ violation.vehicle.model }} - {{ violation.vehicle.vehicle_type }}</td>
+                    <td>{{ violation.vehicle.plate_number }}</td>
+                    <td>{{ violation.violation_type }}</td>
+                    <td>
+                        {% with ticket=violation.ticket_references.first %}
+                            {% if ticket %}{{ ticket.reference_number }}{% else %}No ticket{% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>PHP {{ violation.fine_amount }}</td>
+                    <td><span class="status-pill">{{ violation.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No violation records yet</h2>
+        <p>Recent offender records appear after violations are added.</p>
+    </div>
+    {% endif %}
+</section>
+
+<section class="content-panel mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Recent Payments</span>
+            <h2 class="h4 fw-bold mb-0">Latest Fine Payment Submissions</h2>
+        </div>
+        <a class="btn btn-outline-dark" href="/payments/">All Payments</a>
+    </div>
+
+    {% if recent_payments %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Receipt</th>
+                    <th>User</th>
+                    <th>Ticket</th>
+                    <th>Plate</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in recent_payments %}
+                <tr>
+                    <td class="fw-bold">{{ payment.receipt_number }}</td>
+                    <td>{{ payment.user }}</td>
+                    <td>{{ payment.ticket_number }}</td>
+                    <td>{{ payment.plate_number }}</td>
+                    <td>PHP {{ payment.amount_paid }}</td>
+                    <td><span class="status-pill">{{ payment.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No payment submissions yet</h2>
+        <p>Recent payment records appear after users submit fine payments.</p>
+    </div>
+    {% endif %}
+</section>
+
+<section class="content-panel">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Repeat Offenders</span>
+            <h2 class="h4 fw-bold mb-0">Flagged Drivers</h2>
+        </div>
+        <a class="btn btn-outline-dark" href="/drivers/">Driver Records</a>
+    </div>
+
+    {% if repeat_offenders %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>License</th>
+                    <th>Violations</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in repeat_offenders %}
+                <tr>
+                    <td class="fw-bold">{{ driver.first_name }} {{ driver.last_name }}</td>
+                    <td>{{ driver.license_number }}</td>
+                    <td>{{ driver.violation_count }}</td>
+                    <td>{{ driver.contact_number }}</td>
+                    <td>{{ driver.address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2 class="h5 fw-bold text-dark">No repeat offenders found</h2>
+        <p>Repeat offender alerts appear once a driver has two or more recorded violations.</p>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

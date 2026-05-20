@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block title %}Payments | Traffic Violation System{% endblock %}
+
+{% block content %}
+<section class="hero-panel mb-4">
+    <span class="eyebrow">Collections</span>
+    {% if user.is_authenticated and user.is_staff %}
+    <h1 class="page-title h1">Payment Records</h1>
+    <p class="lead-copy mb-4">Review all submitted fine payments and verify offender payment status.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="#payment-records">View Recent Records</a>
+        <a class="btn btn-outline-dark" href="/accounts/staff-portal/">Staff Portal</a>
+        <a class="btn btn-outline-dark" href="/">Back to Dashboard</a>
+    </div>
+    {% else %}
+    <h1 class="page-title h1">Pay My Fine</h1>
+    <p class="lead-copy mb-4">Choose an official payment method, then submit the matched ticket for verification.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="#payment-methods">Select Payment Method</a>
+        <a class="btn btn-outline-dark" href="#payment-records">View Payment Records</a>
+        <a class="btn btn-outline-dark" href="/">Back to Dashboard</a>
+    </div>
+    {% endif %}
+</section>
+
+{% if not user.is_staff %}
+<section class="content-panel mb-4" id="payment-methods">
+    <div class="text-center mb-4">
+        <div class="d-flex align-items-center gap-3 justify-content-center mb-2">
+            <span class="flex-grow-1 border-top"></span>
+            <h2 class="h1 fw-bold mb-0">SELECT PAYMENT METHOD</h2>
+            <span class="flex-grow-1 border-top"></span>
+        </div>
+        <p class="text-muted mb-0">Choose your preferred official payment method.</p>
+    </div>
+
+    <div class="row g-3 align-items-start">
+        <div class="col-lg-8">
+            <div class="payment-option is-active" data-payment-option>
+                <div class="payment-option-head">
+                    <input class="form-check-input" type="radio" name="payment_method_choice" checked>
+                    <div class="payment-icon">P</div>
+                    <div class="flex-grow-1">
+                        <h3 class="h5 fw-bold mb-1">In-App Payment</h3>
+                        <p class="text-muted mb-0">Pay securely within this application.</p>
+                    </div>
+                    <button class="btn btn-sm btn-link text-dark text-decoration-none" type="button" data-payment-toggle>Hide</button>
+                </div>
+                <div class="payment-option-body">
+                    <div class="payment-logos">
+                        <span>GCash</span>
+                        <span>Maya</span>
+                        <span>Visa</span>
+                    </div>
+                    <p class="text-muted mt-3 mb-3">Your ticket/reference number and plate number will be checked against the official violation record.</p>
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-primary px-5" href="/payments/checkout/?channel=in_app">Proceed to Payment</a>
+                    {% else %}
+                    <a class="btn btn-primary px-5" href="/accounts/signup/">Sign Up to Pay</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="payment-option" data-payment-option>
+                <div class="payment-option-head">
+                    <input class="form-check-input" type="radio" name="payment_method_choice">
+                    <div class="payment-icon payment-icon-red">D</div>
+                    <div class="flex-grow-1">
+                        <h3 class="h5 fw-bold mb-1">Digital Payment</h3>
+                        <p class="text-muted mb-0">Pay through partner apps after entering your ticket reference.</p>
+                    </div>
+                    <button class="btn btn-sm btn-link text-dark text-decoration-none" type="button" data-payment-toggle>Show</button>
+                </div>
+                <div class="payment-option-body d-none">
+                    <div class="payment-logos">
+                        <span>Bank App</span>
+                        <span>E-Wallet</span>
+                        <span>QR Transfer</span>
+                    </div>
+                    <p class="text-muted mt-3 mb-3">Your checkout will show only digital payment choices.</p>
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-primary px-5" href="/payments/checkout/?channel=digital">Continue Digital Payment</a>
+                    {% else %}
+                    <a class="btn btn-primary px-5" href="/accounts/signup/">Sign Up to Pay</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="payment-option" data-payment-option>
+                <div class="payment-option-head">
+                    <input class="form-check-input" type="radio" name="payment_method_choice">
+                    <div class="payment-icon payment-icon-gold">O</div>
+                    <div class="flex-grow-1">
+                        <h3 class="h5 fw-bold mb-1">Over-the-Counter</h3>
+                        <p class="text-muted mb-0">Settle the fine at an authorized office or payment center.</p>
+                    </div>
+                    <button class="btn btn-sm btn-link text-dark text-decoration-none" type="button" data-payment-toggle>Show</button>
+                </div>
+                <div class="payment-option-body d-none">
+                    <div class="payment-logos">
+                        <span>Cash</span>
+                        <span>Payment Center</span>
+                        <span>LTO Cashier</span>
+                    </div>
+                    <p class="text-muted mt-3 mb-3">Your checkout will show only over-the-counter choices.</p>
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-primary px-5" href="/payments/checkout/?channel=counter">Prepare Counter Receipt</a>
+                    {% else %}
+                    <a class="btn btn-primary px-5" href="/accounts/signup/">Sign Up to Pay</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <aside class="payment-benefits">
+                <h3 class="h5 fw-bold">WHY PAY ONLINE?</h3>
+                <p class="text-muted">Faster, safer, official.</p>
+                <div class="benefit-item"><span>Fast</span> Faster Processing</div>
+                <div class="benefit-item"><span>Lock</span> Secure Payment</div>
+                <div class="benefit-item"><span>OK</span> Ticket and plate validation</div>
+                <div class="benefit-item"><span>Easy</span> Less Hassle</div>
+                <p class="text-muted mb-0 mt-4">Retain your receipt until your status is updated.</p>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="content-panel" id="payment-records">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center mb-3">
+        <div>
+            <span class="eyebrow">Payment History</span>
+            {% if user.is_authenticated and user.is_staff %}
+            <h2 class="h4 fw-bold mb-0">All Recent Payment Records</h2>
+            {% else %}
+            <h2 class="h4 fw-bold mb-0">My Payment Records</h2>
+            {% endif %}
+        </div>
+        {% if not user.is_authenticated %}
+        <a class="btn btn-outline-dark" href="/accounts/signup/">Sign Up to Pay</a>
+        {% endif %}
+    </div>
+
+    {% if payments %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Receipt</th>
+                    <th>Ticket</th>
+                    <th>Violation</th>
+                    <th>Payment Method</th>
+                    <th>Amount Paid</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td class="fw-bold">{{ payment.receipt_number }}</td>
+                    <td>{{ payment.ticket_number }}</td>
+                    <td>{{ payment.violation_type|default:payment.violation }}</td>
+                    <td>{{ payment.payment_method }}</td>
+                    <td>PHP {{ payment.amount_paid }}</td>
+                    <td><span class="status-pill">{{ payment.get_status_display }}</span></td>
+                    <td>
+                        {% if user.is_staff %}
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'download_pdf_receipt' payment.id %}">Download PDF</a>
+                        {% elif user.is_authenticated and payment.user == user %}
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'download_pdf_receipt' payment.id %}">Download PDF</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        {% if user.is_authenticated and user.is_staff %}
+        <h2 class="h5 fw-bold text-dark">No payment records yet</h2>
+        <p>All offender payment submissions will appear here once users submit fine payments.</p>
+        <a class="btn btn-primary" href="/accounts/staff-portal/">Staff Portal</a>
+        {% elif user.is_authenticated %}
+        <h2 class="h5 fw-bold text-dark">No payment records yet</h2>
+        <p>Your payment records will appear here after you submit a fine payment.</p>
+        <a class="btn btn-primary" href="/payments/checkout/">Pay a Fine</a>
+        {% else %}
+        <h2 class="h5 fw-bold text-dark">Login required for payment records</h2>
+        <p>For privacy, payment records are only visible to the account that submitted them.</p>
+        <a class="btn btn-primary" href="/accounts/login/">Login</a>
+        <a class="btn btn-outline-dark" href="/accounts/signup/">Sign Up</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+
+<style>
+    .payment-option {
+        border: 1px solid rgba(7, 26, 61, 0.24);
+        border-radius: 8px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.84);
+    }
+
+    .payment-option.is-active {
+        border-color: #0b47ad;
+        box-shadow: 0 16px 36px rgba(6, 71, 184, 0.1);
+    }
+
+    .payment-option-head {
+        align-items: center;
+        display: flex;
+        gap: 16px;
+        padding: 22px 20px;
+    }
+
+    .payment-option-body {
+        border-top: 1px solid rgba(7, 26, 61, 0.12);
+        padding: 20px;
+    }
+
+    .payment-icon {
+        align-items: center;
+        background: #0647b8;
+        border-radius: 6px;
+        color: #fff;
+        display: inline-flex;
+        font-weight: 900;
+        height: 42px;
+        justify-content: center;
+        min-width: 42px;
+    }
+
+    .payment-icon-red {
+        background: #d90d28;
+    }
+
+    .payment-icon-gold {
+        background: #f3b61f;
+        color: #111827;
+    }
+
+    .payment-logos {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    }
+
+    .payment-logos span {
+        align-items: center;
+        border: 1px solid rgba(7, 26, 61, 0.12);
+        border-radius: 6px;
+        display: inline-flex;
+        font-size: 0.82rem;
+        font-weight: 800;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px;
+    }
+
+    .payment-benefits {
+        border: 1px solid rgba(7, 26, 61, 0.2);
+        border-radius: 8px;
+        padding: 22px;
+        background: rgba(255, 255, 255, 0.92);
+    }
+
+    .benefit-item {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+        font-weight: 700;
+        margin: 14px 0;
+    }
+
+    .benefit-item span {
+        align-items: center;
+        background: #d90d28;
+        border-radius: 6px;
+        color: #fff;
+        display: inline-flex;
+        font-size: 0.72rem;
+        font-weight: 900;
+        height: 32px;
+        justify-content: center;
+        min-width: 32px;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('[data-payment-option]').forEach((option) => {
+        const toggle = option.querySelector('[data-payment-toggle]');
+        const radio = option.querySelector('input[type="radio"]');
+        const body = option.querySelector('.payment-option-body');
+
+        function activate() {
+            document.querySelectorAll('[data-payment-option]').forEach((item) => {
+                item.classList.remove('is-active');
+                item.querySelector('input[type="radio"]').checked = false;
+                item.querySelector('.payment-option-body').classList.add('d-none');
+                item.querySelector('[data-payment-toggle]').textContent = 'Show';
+            });
+
+            option.classList.add('is-active');
+            radio.checked = true;
+            body.classList.remove('d-none');
+            toggle.textContent = 'Hide';
+        }
+
+        option.addEventListener('click', (event) => {
+            if (event.target.closest('a')) {
+                return;
+            }
+            activate();
+        });
+    });
+</script>
+{% endblock %}
