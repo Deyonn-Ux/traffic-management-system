@@ -109,7 +109,7 @@
             <span class="eyebrow">Recent Offender Records</span>
             <h2 class="h4 fw-bold mb-0">Latest Violation Cases</h2>
         </div>
-        <a class="btn btn-outline-dark" href="/violations/">All Violations</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_violation' %}">All Violations</a>
     </div>
 
     {% if recent_violations %}
@@ -205,7 +205,7 @@
             <span class="eyebrow">Repeat Offenders</span>
             <h2 class="h4 fw-bold mb-0">Flagged Drivers</h2>
         </div>
-        <a class="btn btn-outline-dark" href="/drivers/">Driver Records</a>
+        <a class="btn btn-outline-dark" href="{% url 'staff_add_driver' %}">Driver Records</a>
     </div>
 
     {% if repeat_offenders %}
