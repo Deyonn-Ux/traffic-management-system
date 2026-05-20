@@ -6,9 +6,17 @@
 <section class="content-panel checkout-panel">
     <div class="row g-4 align-items-start">
         <div class="col-lg-7">
-            <span class="eyebrow">Payment Checkout</span>
-            <h1 class="h3 fw-bold mb-2">Pay using your ticket details</h1>
-            <p class="text-muted mb-4">Enter the ticket/reference number issued by the traffic enforcer and the matching plate number. The system will use the official violation record for the fine details.</p>
+            <span class="eyebrow">{% if is_counter_payment %}Cash Payment Slip{% else %}Payment Checkout{% endif %}</span>
+            <h1 class="h3 fw-bold mb-2">
+                {% if is_counter_payment %}Prepare cash payment using your ticket details{% else %}Pay using your ticket details{% endif %}
+            </h1>
+            <p class="text-muted mb-4">
+                {% if is_counter_payment %}
+                Enter the ticket/reference number and matching plate number. Once verified, present the generated payment details to staff and pay the fine in cash.
+                {% else %}
+                Enter the ticket/reference number issued by the traffic enforcer and the matching plate number. The system will use the official violation record for the fine details.
+                {% endif %}
+            </p>
 
             {% if messages %}
             {% for message in messages %}
@@ -51,11 +59,17 @@
                 </div>
 
                 <div class="alert alert-warning mt-3 mb-3">
+                    {% if is_counter_payment %}
+                    The ticket/reference number must match the plate number before a cash payment slip can be generated.
+                    {% else %}
                     The ticket/reference number must be issued from the staff portal and match the plate number before a payment record can be created.
+                    {% endif %}
                 </div>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-primary px-4" type="submit">Submit Payment for Verification</button>
+                    <button class="btn btn-primary px-4" type="submit">
+                        {% if is_counter_payment %}Generate Cash Payment Slip{% else %}Submit Payment for Verification{% endif %}
+                    </button>
                     <a class="btn btn-outline-dark" href="/payments/#payment-methods">Back to Payment Methods</a>
                 </div>
             </form>
@@ -65,10 +79,10 @@
             <aside class="receipt-card" id="receiptCard">
                 <div class="receipt-head">
                     <div>
-                        <span class="eyebrow">Temporary Receipt</span>
-                        <h2 class="h5 fw-bold mb-0">Traffic Violation Payment</h2>
+                        <span class="eyebrow">{% if is_counter_payment %}Cash Payment Slip{% else %}Temporary Receipt{% endif %}</span>
+                        <h2 class="h5 fw-bold mb-0">{% if is_counter_payment %}Traffic Violation Cash Payment{% else %}Traffic Violation Payment{% endif %}</h2>
                     </div>
-                    <span class="receipt-badge">Pending Verification</span>
+                    <span class="receipt-badge">{% if is_counter_payment %}For Cash Payment{% else %}Pending Verification{% endif %}</span>
                 </div>
                 <div class="receipt-line">
                     <span>Receipt No.</span>
@@ -100,11 +114,19 @@
                     <strong>{{ receipt.created_at|date:"M d, Y H:i:s" }}</strong>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mt-3">
-                    <a class="btn btn-primary" href="{% url 'download_pdf_receipt' receipt.id %}">Download PDF Receipt</a>
+                    <a class="btn btn-primary" href="{% url 'download_pdf_receipt' receipt.id %}">
+                        {% if is_counter_payment %}Download Cash Slip{% else %}Download PDF Receipt{% endif %}
+                    </a>
                     <a class="btn btn-outline-dark" href="/payments/">Back to Payment Methods</a>
                 </div>
                 {% endif %}
-                <p class="text-muted small mb-0 mt-3">Keep this temporary receipt and compare it with the official receipt from the payment provider.</p>
+                <p class="text-muted small mb-0 mt-3">
+                    {% if is_counter_payment %}
+                    Present this slip to staff. Staff will mark the payment as paid after receiving the cash.
+                    {% else %}
+                    Keep this temporary receipt and compare it with the official receipt from the payment provider.
+                    {% endif %}
+                </p>
             </aside>
         </div>
     </div>

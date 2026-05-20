@@ -67,6 +67,7 @@ def payment_checkout(request):
                 'payment_channel_label': method_group['label'],
                 'payment_methods': method_group['methods'],
                 'default_payment_method': method_group['methods'][0],
+                'is_counter_payment': selected_channel == 'counter',
             })
 
         ticket_reference = (
@@ -85,6 +86,7 @@ def payment_checkout(request):
                 'payment_channel_label': method_group['label'],
                 'payment_methods': method_group['methods'],
                 'default_payment_method': method_group['methods'][0],
+                'is_counter_payment': selected_channel == 'counter',
             })
 
         existing_payment = Payment.objects.filter(
@@ -100,6 +102,7 @@ def payment_checkout(request):
                 'payment_channel_label': method_group['label'],
                 'payment_methods': method_group['methods'],
                 'default_payment_method': method_group['methods'][0],
+                'is_counter_payment': selected_channel == 'counter',
             })
 
         violation = ticket_reference.violation
@@ -116,7 +119,10 @@ def payment_checkout(request):
             receipt_number=f'TVS-{timestamp}',
             status='pending',
         )
-        messages.success(request, 'Temporary receipt created. Your payment is pending admin verification.')
+        if selected_channel == 'counter':
+            messages.success(request, 'Cash payment slip created. Present this slip to staff and pay the fine in cash.')
+        else:
+            messages.success(request, 'Temporary receipt created. Your payment is pending staff verification.')
 
     method_group = PAYMENT_METHOD_GROUPS.get(selected_channel, PAYMENT_METHOD_GROUPS['in_app'])
 
@@ -127,6 +133,7 @@ def payment_checkout(request):
         'payment_channel_label': method_group['label'],
         'payment_methods': method_group['methods'],
         'default_payment_method': method_group['methods'][0],
+        'is_counter_payment': selected_channel == 'counter',
     })
 
 
